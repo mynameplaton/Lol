@@ -1,42 +1,34 @@
-import random
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+import telebot
 
-TOKEN = "No"
+token = "I'm not telling you my token"
+bot = telebot.TeleBot(token)
 
-bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
-
-kb = ReplyKeyboardMarkup(resize_keyboard=True)
-kb.add("🌡️ Температура", "🫁 CO₂")
-kb.add("❄️ Ледники", "♻️ Совет")
-
-@dp.message_handler(commands=["start"])
-async def start(msg: types.Message):
-    await msg.answer(
-        "Привет! Я EcoInfoBot 🌍\nВыбери действие:",
-        reply_markup=kb
+@bot.message_handler(commands=["start"])
+def start(message):
+    bot.send_message(
+        message.chat.id,
+        "привет! я хранитель планеты 🌍\n"
+        "команды:\n"
+        "/temp — температура\n"
+        "/co2 — co2\n"
+        "/ice — ледники\n"
+        "/tip — совет"
     )
 
-@dp.message_handler(lambda m: m.text == "🌡️ Температура")
-async def temp(m: types.Message):
-    await m.answer("Средняя температура Земли растёт.")
+@bot.message_handler(commands=["temp"])
+def temp(message):
+    bot.send_message(message.chat.id, "температура земли выросла примерно на 1°c.")
 
-@dp.message_handler(lambda m: m.text == "🫁 CO₂")
-async def co2(m: types.Message):
-    await m.answer("Уровень CO₂ в атмосфере увеличивается.")
+@bot.message_handler(commands=["co2"])
+def co2(message):
+    bot.send_message(message.chat.id, "уровень co2 сейчас больше 420 ppm.")
 
-@dp.message_handler(lambda m: m.text == "❄️ Ледники")
-async def ice(m: types.Message):
-    await m.answer("Арктические ледники тают.")
-@dp.message_handler(lambda m: m.text == "♻️ Совет")
-async def tip(m: types.Message):
-    tips = [
-        "Экономь воду",
-        "Выключай свет",
-        "Используй многоразовые вещи"
-    ]
-    await m.answer(random.choice(tips))
+@bot.message_handler(commands=["ice"])
+def ice(message):
+    bot.send_message(message.chat.id, "арктические льды тают каждый год.")
 
-if __name__ == "__main__":
-    executor.start_polling(dp)
+@bot.message_handler(commands=["tip"])
+def tip(message):
+    bot.send_message(message.chat.id, "совет 🌱: выключай свет, когда выходишь из комнаты.")
+
+bot.polling()
